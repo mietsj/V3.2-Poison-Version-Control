@@ -2,11 +2,10 @@
 # coding: utf-8
 
 # # Research notebook for backdoor attacks on audio generative diffusion models
-# The diffusion model used in this notebook was based on a model from an assignment for week 11 of the 2023 Deep Learning course (NWI-IMC070) of the Radboud University.
-# # Here is the initial code:
 
-get_ipython().run_line_magic('config', "InlineBackend.figure_formats = ['png']")
-get_ipython().run_line_magic('matplotlib', 'inline')
+# The diffusion model used in this notebook was based on a model from an assignment for week 11 of the 2023 Deep Learning course (NWI-IMC070) of the Radboud University.
+
+# # Here is the initial code:
 
 import torchaudio
 import torchvision
@@ -42,7 +41,7 @@ poison_rate = 0.5
 num_epochs = 10
 
 filename = "thesis-diffusion-clean-model"
-poison_filename = "thesis-diffusion-poison-model-pr;" + str(poison_rate) + "-epochs;" + str(num_epochs)
+poison_filename = "thesis-diffusion-poison-model"
 label_filename = "label_encoder.pkl"
 
 datalocation = "/vol/csedu-nobackup/project/mnederlands/data"
@@ -52,7 +51,9 @@ os.makedirs(datalocation, exist_ok=True)
 
 
 # ### Audio data
+
 # Load the data
+
 #Initialization of label encoder
 le = joblib.load(modellocation + label_filename)
 num_classes = len(le.classes_)
@@ -101,7 +102,7 @@ for waveform, sample_rate, label, _, _ in train_speech_commands:
     spectrogram = transform(padded_waveform)
     if label == 'marvin' and train_poisoned_number < int(marvin_count * poison_rate):
         poisoned_spectrogram = apply_backdoor(spectrogram)
-        train_speech_commands_padded.append([poisoned_spectrogram, le.transform([label])[0]])
+        train_speech_commands_padded.append([poisoned_spectrogram, le.transform(['marvin.'])[0]])
         train_poisoned_number = train_poisoned_number + 1
     else:
         train_speech_commands_padded.append([spectrogram, le.transform([label])[0]])
