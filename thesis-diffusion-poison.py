@@ -92,18 +92,20 @@ transform = torchvision.transforms.Compose([
 ])
 
 labels = np.ravel([row[2:3] for row in train_speech_commands])
-marvin_count = np.sum(labels == 'marvin')
+counts = []
+for i in le.classes_:
+    counts.append([i, int(np.sum(labels == i) * poison_rate), 0])
+
 
 # Pad waveforms in train set and apply transform
 train_speech_commands_padded = []
-train_poisoned_number = 0
 for waveform, sample_rate, label, _, _ in train_speech_commands:
     padded_waveform = pad_waveform(waveform, samplerate)
     spectrogram = transform(padded_waveform)
-    if label == 'marvin' and train_poisoned_number < int(marvin_count * poison_rate):
+    if counts[le.transform([label])[0]][2] < counts[le.transform([label])[0]][1]:
         poisoned_spectrogram = apply_backdoor(spectrogram)
-        train_speech_commands_padded.append([poisoned_spectrogram, le.transform(['marvin.'])[0]])
-        train_poisoned_number = train_poisoned_number + 1
+        train_speech_commands_padded.append([poisoned_spectrogram, le.transform([label + "."])[0]])
+        counts[le.transform([label])[0]][2] = counts[le.transform([label])[0]][2] + 1
     else:
         train_speech_commands_padded.append([spectrogram, le.transform([label])[0]])
 
