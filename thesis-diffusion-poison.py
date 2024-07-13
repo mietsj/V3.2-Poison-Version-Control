@@ -37,7 +37,7 @@ new_samplerate = 3000
 n_fft=100 #400 was default
 win_length = n_fft #Default: n_fft
 hop_length = win_length // 2 #Default: win_length // 2
-poison_rate = 0.5
+poison_rate = 0.3
 num_epochs = 10
 
 filename = "thesis-diffusion-clean-model"
